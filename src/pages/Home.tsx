@@ -16,10 +16,10 @@ export default function Home() {
         <PeopleList people={people} />
         <div className='items-center flex justify-between'>
           <Button title="+ Add people" onPress={addPeople} />
-          <div className='text-right'>
+          {people.length > 1 ? (<div className='text-right'>
             <span className='text-xl'>Total: ${total}</span><br />
             <span className='font-light'>per: ${each}</span>
-          </div>
+          </div>) : null}
         </div>
       </div>
     </div>

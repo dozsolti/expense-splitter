@@ -6,6 +6,9 @@ interface Properties {
   people: People[]
 }
 export default function PeopleList({ people }: Properties): ReactElement {
+
+  if (people.length === 0)
+    return (<></>);
   return (
     <div className='my-4 text-white'>
       <h2>People</h2>
