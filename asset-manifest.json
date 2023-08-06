@@ -1,16 +1,15 @@
 {
   "files": {
-    "main.css": "/expense-splitter/static/css/main.073c9b0a.css",
-    "main.js": "/expense-splitter/static/js/main.1ac30326.js",
+    "main.css": "/expense-splitter/static/css/main.904c0f38.css",
+    "main.js": "/expense-splitter/static/js/main.df703b21.js",
     "static/js/787.6dd1ec48.chunk.js": "/expense-splitter/static/js/787.6dd1ec48.chunk.js",
-    "static/media/logo.svg": "/expense-splitter/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/expense-splitter/index.html",
-    "main.073c9b0a.css.map": "/expense-splitter/static/css/main.073c9b0a.css.map",
-    "main.1ac30326.js.map": "/expense-splitter/static/js/main.1ac30326.js.map",
+    "main.904c0f38.css.map": "/expense-splitter/static/css/main.904c0f38.css.map",
+    "main.df703b21.js.map": "/expense-splitter/static/js/main.df703b21.js.map",
     "787.6dd1ec48.chunk.js.map": "/expense-splitter/static/js/787.6dd1ec48.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.073c9b0a.css",
-    "static/js/main.1ac30326.js"
+    "static/css/main.904c0f38.css",
+    "static/js/main.df703b21.js"
   ]
 }
