@@ -7,11 +7,145 @@ interface ContextProps {
 }
 const StoreContext = createContext<ContextProps>({
   people: [],
-  setPeople: ()=> {}
+  setPeople: () => { }
 })
 
-export function StoreProvider({ children }: {children: ReactElement}) {
-  const [people, setPeople] = useState<People[]>([])
+const testData1 = [{
+  id: '1',
+  name: 'Matyi',
+  amount: 227.25
+},
+{
+  id: '2',
+  name: 'Peti',
+  amount: 115.35
+},
+{
+  id: '3',
+  name: 'Zse',
+  amount: 675.27
+},
+{
+  id: '4',
+  name: 'Gergo',
+  amount: 100
+},
+{
+  id: '5',
+  name: 'Clau',
+  amount: 0
+},
+{ id: '6', name: 'Kozsi', amount: 0 },
+{ id: '7', name: 'Kevin', amount: 0 },
+{ id: '8', name: 'Leo', amount: 0 },
+{ id: '9', name: 'Mark', amount: 0 },
+{ id: '10', name: 'Medve', amount: 0 },
+{ id: '11', name: 'Edi', amount: 0 },
+
+]
+const testData2 = [{
+  id: '1',
+  name: 'Matyi',
+  amount: 227.25
+},
+{
+  id: '2',
+  name: 'Peti',
+  amount: 115.35
+},
+{
+  id: '3',
+  name: 'Zse',
+  amount: 675.27
+},
+{
+  id: '4',
+  name: 'Gergo',
+  amount: 50
+},
+{ id: '6', name: 'Kozsi', amount: 0 },
+{ id: '7', name: 'Kevin', amount: 0 },
+{ id: '8', name: 'Leo', amount: 0 },
+{ id: '9', name: 'Mark', amount: 0 },
+{ id: '11', name: 'Edi', amount: 0 },
+
+]
+
+const testData3 = [
+  {
+    id: '1',
+    name: 'Zse',
+    amount: 50
+  },
+  {
+    id: '2',
+    name: 'Zse',
+    amount: 200
+  },
+  {
+    id: '3',
+    name: 'Peti',
+    amount: 0
+  },
+]
+const testData4: People[] = [
+  {
+    id: '1',
+    name: 'Zse',
+    amount: 525.44,
+    reason: "Kaja + pia"
+  },
+  {
+    id: '2',
+    name: 'Zse',
+    amount: 99.83,
+    reason: "Mici"
+  },
+  {
+    id: '3',
+    name: 'Zse',
+    amount: 50,
+    reason: "papir faszsagok"
+  },
+
+  {
+    id: '4',
+    name: 'Peti',
+    amount: 23.96,
+    reason:'kenyer',
+  },
+  {
+    id: '5',
+    name: 'Peti',
+    amount: 91.39,
+    reason:'csirke',
+  },
+  {
+    id: '6',
+    name: 'Matyi',
+    amount: 51.12,
+    reason:'reggeli',
+  },
+  {
+    id: '7',
+    name: 'Matyi',
+    amount: 176.13,
+    reason:'pia',
+  },
+  {
+    id: '8',
+    name: 'Gergo',
+    amount: 50,
+    reason:'otthoni cuccok',
+  },
+  {id:'9', name: 'Kozsi', amount:0},
+  {id: '11', name: 'Kevin', amount:0},
+  {id:'12', name: 'Leo', amount:0},
+  {id:'13', name: 'Mark', amount:0},
+  {id:'14', name: 'Edi', amount:0},
+]
+export function StoreProvider({ children }: { children: ReactElement }) {
+  const [people, setPeople] = useState<People[]>(testData4)
 
   return (
     <StoreContext.Provider value={{ people, setPeople }}>
@@ -23,8 +157,20 @@ export function StoreProvider({ children }: {children: ReactElement}) {
 export const useStore = () => {
   const { people, setPeople } = useContext(StoreContext)
 
+  const uniquePeople = useMemo(()=>{
+    return Object.entries<People>(people.reduce((t, v) => {
+
+      if (v.name in t)
+        t[v.name].amount += +v.amount;
+      else
+        t[v.name] = {...v}
+
+      return t;
+    }, {} as any)).map(x => x[1]);
+  }, [people])
+
   const total = +(people.reduce((t, v) => +t + +v.amount, 0)).toFixed(2)
-  const each = +(total / (people.length || 1)).toFixed(2)
+  const each = +(total / (uniquePeople.length || 1)).toFixed(2)
 
   const addPeople = () => {
     if (!setPeople) return;
@@ -45,11 +191,12 @@ export const useStore = () => {
 
   const costList = useMemo<{ froms: People[], to: People }[]>(() => {
 
-    let peopleWhoOwns = people
+    let peopleWhoOwns = uniquePeople
+
       .map(p => ({ ...p, toPay: each - p.amount }))
       .filter(p => p.toPay > 0)
 
-    let peopleWhoNeeds = people
+    let peopleWhoNeeds = uniquePeople
       .map(p => ({ ...p, toPay: each - p.amount }))
       .filter(p => p.toPay < 0)
 
@@ -65,7 +212,7 @@ export const useStore = () => {
         if (peopleWhoNeeds[i].toPay > 0) break;
 
         let amount = +Math.min(Math.abs(peopleWhoNeeds[i].toPay), peopleWhoOwns[j].toPay).toFixed(2);
-        if(amount===0)
+        if (amount === 0)
           continue;
         arr[peopleWhoNeeds[i].id].froms.push({
           ...peopleWhoOwns[j],
