@@ -33,17 +33,17 @@ export const useStore = () => {
   }
   const updateUser = (id: string, fieldName: string, value: string) => {
     setPeople((ps: People[]) => {
-    const i = ps.findIndex(p => p.id === id)
-    if (i === -1) return [...ps];
-    (ps[i] as any)[fieldName] = value;
-     return [...ps]
+      const i = ps.findIndex(p => p.id === id)
+      if (i === -1) return [...ps];
+      (ps[i] as any)[fieldName] = value;
+      return [...ps]
     })
   }
   const deleteUser = (id: string) => {
     setPeople((ps: People[]) => ps.filter(p => p.id !== id))
   }
 
-  const costList = useMemo< { froms: People[], to: People}[]>(() => {
+  const costList = useMemo<{ froms: People[], to: People }[]>(() => {
 
     let peopleWhoOwns = people
       .map(p => ({ ...p, toPay: each - p.amount }))
@@ -65,7 +65,8 @@ export const useStore = () => {
         if (peopleWhoNeeds[i].toPay > 0) break;
 
         let amount = +Math.min(Math.abs(peopleWhoNeeds[i].toPay), peopleWhoOwns[j].toPay).toFixed(2);
-
+        if(amount===0)
+          continue;
         arr[peopleWhoNeeds[i].id].froms.push({
           ...peopleWhoOwns[j],
           amount
