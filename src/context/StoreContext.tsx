@@ -145,7 +145,7 @@ const testData4: People[] = [
   {id:'14', name: 'Edi', amount:0},
 ]
 export function StoreProvider({ children }: { children: ReactElement }) {
-  const [people, setPeople] = useState<People[]>(testData4)
+  const [people, setPeople] = useState<People[]>([])
 
   return (
     <StoreContext.Provider value={{ people, setPeople }}>
