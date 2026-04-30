@@ -10,7 +10,6 @@ interface DataState {
   }[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const testPeople = [
   { id: 1, name: "Alice" },
   { id: 2, name: "Bob" },
@@ -25,7 +24,6 @@ const testPeople = [
   { id: 11, name: "Karl" },
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const testExpenses = [
   {
     id: "test-expense-1",
@@ -61,7 +59,10 @@ const useData = create<DataState>(() => ({
       .map((name) => ({
         id: nameToId(name),
         name,
-      })) || [],
+      })) ||
+    (window.location.href.includes("github")
+      ? []
+      : testPeople.map((person) => ({ ...person, id: nameToId(person.name) }))),
   expenses:
     new URL(window.location.href).searchParams
       .get("expenses")
@@ -74,7 +75,7 @@ const useData = create<DataState>(() => ({
           amount: parseFloat(amountStr),
           paidBy,
         };
-      }) || [],
+      }) || (window.location.href.includes("github") ? [] : testExpenses),
 }));
 
 useData.subscribe((state) => {
