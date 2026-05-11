@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect } from "react";
 
+import { setQueryParams } from "../utils/query";
 import Button from "./button";
 
 export default function Pager({
@@ -19,9 +20,9 @@ export default function Pager({
   );
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("page", currentPage.toString());
-    window.history.pushState(null, "", url.toString());
+    setQueryParams({
+      page: currentPage.toString(),
+    });
   }, [currentPage]);
 
   const isLastPage = currentPage === sections.length - 1;

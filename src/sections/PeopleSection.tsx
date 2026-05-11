@@ -34,7 +34,7 @@ function PeopleSection() {
         />
       </div>
 
-      <ul className="columns-2 list-inside list-none">
+      <ul className="columns-2 lg:columns-3 list-inside list-none">
         {people.map((person) => (
           <li
             key={person.id}

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import html2canvas from "html2canvas";
+import { useRef, useState } from "react";
 
 import useData from "../store";
 import Button from "../ui/button";
@@ -6,6 +7,8 @@ import { formatAmount } from "../utils/formatters";
 import { splitEqualy, splitFewerTransactions } from "../utils/splitter";
 
 export default function SummarySection() {
+  const printRef = useRef<HTMLDivElement>(null);
+
   const [mode, setMode] = useState<"equal" | "quick">("equal");
 
   const { people, expenses } = useData((state) => state);
@@ -57,8 +60,83 @@ export default function SummarySection() {
     return person ? person.name : "Unknown";
   };
 
+  const handleDownloadImage = async () => {
+    const element = printRef.current;
+    if (!element) return;
+    element.style.display = "block";
+    const canvas = await html2canvas(element);
+    element.style.display = "none";
+
+    const data = canvas.toDataURL("image/jpg");
+    const link = document.createElement("a");
+
+    if (typeof link.download === "string") {
+      link.href = data;
+      link.download = `expense-people-${people.map((p) => p.name[0]).join("")}-total-${formatAmount(totalAmount).split(".")[0]}-${new Date().toISOString()}.jpg`;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.open(data);
+    }
+  };
+
   return (
     <div>
+      <div id="print-section" className="hidden p-4" ref={printRef}>
+        <h1 className="py-2 font-bold text-2xl text-center">
+          Summary {new Date().toLocaleString()}
+        </h1>
+        <h2 className="text-lg">{people.length} People</h2>
+        <p className="italic">{people.map((p) => p.name).join(", ")}</p>
+
+        <h2 className="mt-2 text-lg">{expenses.length} Expenses</h2>
+        <ul className="italic list-disc list-inside">
+          {expenses
+            .map(
+              (e) =>
+                `${getPersonName(e.paidBy)} ${formatAmount(e.amount)} - ${e.description}`,
+            )
+            .map((item, index) => (
+              <li key={`expense-${index}`}>{item}</li>
+            ))}
+        </ul>
+
+        <h2 className="mt-2">People who paid: </h2>
+        <ul className="list-disc list-inside">
+          {peopleWhoPaid.map((row) => (
+            <li key={`people-who-paid-${row.personId}`}>
+              {getPersonName(row.personId)}: {formatAmount(row.amount)} - each{" "}
+              {formatAmount(row.amount / people.length)}
+            </li>
+          ))}
+        </ul>
+        <h2 className="mt-2 text-lg">Total: {formatAmount(totalAmount)}</h2>
+        <h2 className="italic">Per Person: {formatAmount(perPersonAmount)}</h2>
+
+        <hr className="my-3" />
+        <h3 className="font-semibold text-md">
+          {modeText[mode].title.replace("Mode", "Split")}
+        </h3>
+        <ul className="lg:columns-2 px-2 list-decimal list-inside">
+          {transactions.map((t, i) => (
+            <li
+              key={`transaction-${i}`}
+              className={
+                transactions[i - 1]?.personSender !== t.personSender
+                  ? "mt-2"
+                  : ""
+              }
+            >
+              <b>{getPersonName(t.personSender)}</b> needs to send{" "}
+              <b>{formatAmount(t.amount)}</b> to{" "}
+              <b>{getPersonName(t.personReceiver)}</b>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <h2 className="text-lg">Total: {formatAmount(totalAmount)}</h2>
       <h2 className="mb-2 italic">
         Per Person: {formatAmount(perPersonAmount)}
@@ -92,7 +170,7 @@ export default function SummarySection() {
         <h3 className="font-semibold text-md">{modeText[mode].title}</h3>
         <p>{modeText[mode].description}</p>
         <h3 className="mt-3 font-bold text-lg">Transactions</h3>
-        <ul className="list-decimal list-inside">
+        <ul className="lg:columns-2 list-decimal list-inside">
           {transactions.map((t, i) => (
             <li
               key={`transaction-${i}`}
@@ -109,6 +187,8 @@ export default function SummarySection() {
           ))}
         </ul>
       </div>
+
+      <Button label="Download" onClick={handleDownloadImage} className="mt-3" />
     </div>
   );
 }

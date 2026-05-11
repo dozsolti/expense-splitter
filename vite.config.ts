@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import viteCompression from "vite-plugin-compression";
 
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -6,5 +7,11 @@ import react from "@vitejs/plugin-react";
 // https://vite.dev/config/
 export default defineConfig({
   base: "/expense-splitter/",
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    viteCompression({
+      algorithm: "gzip",
+    }),
+  ],
 });
